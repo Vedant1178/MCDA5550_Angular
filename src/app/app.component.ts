@@ -13,6 +13,7 @@ export class AppComponent {
   address!: string;
   phone!: string;
   message:any;
+  data=[{Name:"",Address:"",Phone:""}];
   errorMessage:any;
   constructor(private http: HttpClient){
   
@@ -56,6 +57,10 @@ export class AppComponent {
   }
   removeUniversity()
   {
+    if (!this.name) {
+      alert("Please enter the name of the university!");
+      return false;
+  }
   const data = {
           'Name': this.name,
           }
@@ -68,36 +73,57 @@ export class AppComponent {
           }
         },
           (err) => console.log(err)
-      );          
+      );   
+      return true;       
   }
   searchUniversity()
   {
-  const data = {
-          'Name': this.sName,
+    if (!this.sName) {
+      alert("Please enter the name of the university!");
+      return false;
+  }
+  
+  const data= {
+          'Name': this.sName
           }
       this.http.post<any>('http://dev.cs.smu.ca:9898/searchUniversity',
           data).subscribe( 
-          (res) => {if(res.n==0){
-            alert('University not found')
-          }else{
-            console.log(res)
+
+            {
+              next:data=>{
+                  this.message=data.message;
+                 this.data=data;
+                 if(data.length==0){
+                  alert('University not found')
+                }
+                    },
+              error:error=>{
+                  this.errorMessage=error.message;
+                      console.log('Error is ',this.errorMessage);
+                    }
           }
-        },
-          (err) => console.log(err)
-      );          
+      )  
+  return true;       
   }
   searchAllUniversity()
   {
   const data = {}
       this.http.post<any>('http://dev.cs.smu.ca:9898/searchAllUniversity',
           data).subscribe( 
-          (res) => {if(res.n==0){
-            alert('University not found')
-          }else{
-            alert('University deleted Successfully')
-          }
-        },
-          (err) => console.log(err)
-      );          
-  }
+          {
+            next:data=>{
+                this.message=data.message;
+               this.data=data;
+               if(data.length==0){
+                alert('Please add University')
+              }
+                  },
+            error:error=>{
+                this.errorMessage=error.message;
+                    console.log('Error is ',this.errorMessage);
+                  }
+        }
+      )     
 }
+}
+
